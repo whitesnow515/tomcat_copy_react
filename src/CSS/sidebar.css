@@ -1,0 +1,39 @@
+/* Sidebar.css */
+
+.sidebar {
+  width: 250px; /* Adjust width as needed */
+  height: 100%;
+  background-color: #333; /* Dark background color */
+  color: #fff;
+  position: fixed; /* Fixed position to stay visible */
+}
+
+.logo-container {
+  padding: 1rem;
+  text-align: center;
+}
+
+.logo {
+  max-width: 100%;
+  height: auto;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-link {
+  padding: 1rem;
+  color: #fff;
+  text-decoration: none;
+  transition: background-color 0.3s;
+
+  /* Highlight active link - you can add additional styling for active class */
+}
+
+.nav-link:hover {
+  background-color: #444; /* Slightly lighter on hover */
+}
+
+/* Add media queries for responsiveness if needed */

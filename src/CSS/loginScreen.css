@@ -1,0 +1,88 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f2f5;
+}
+
+.login-card {
+  width: 300px;
+  padding: 2rem;
+  background: #ffffff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.logo-container img {
+  width: 100px; /* Adjust as needed */
+  margin-bottom: 1rem;
+}
+
+.input-group {
+  margin-bottom: 1rem;
+}
+
+.input-group label {
+  display: block;
+  text-align: left;
+  margin-bottom: .5rem;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.login-button {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  margin-top: 1rem;
+  cursor: pointer;
+}
+
+.login-button:hover {
+  background-color: #0056b3;
+}
+
+.sign-up-button {
+  background-color: transparent; /* Makes the button transparent */
+  color: #007bff; /* Matches the login button color for consistency */
+  border: 1px solid #007bff; /* Gives it a border to stand out */
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  width: 100%; /* Optional: if you want the button to expand like the login button */
+  transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effect */
+}
+
+.sign-up-button:hover {
+  background-color: #007bff; /* Color changes on hover */
+  color: white;
+}
+
+.forgot-password-link {
+  display: block;
+  color: #007bff;
+  text-align: center;
+  margin-top: 15px;
+  text-decoration: none; /* Removes underline */
+}
+
+.forgot-password-link a:hover {
+  text-decoration: underline;
+}
+
+.error {
+  color: red;
+  margin-top: 0.5rem;
+}
