@@ -26,12 +26,17 @@ import TradeCopy from './Pages/tables';
 import Account from './Pages/profile';
 import FAQ from './Pages/billing';
 import Army from './Pages/army';
+import { Provider } from "react-redux";
+import store from "./store";
+
 function AppWrapper() {
   return (
     <AuthProvider>
 		<Router>
 			<MaterialUIControllerProvider>
-				<App />
+				<Provider store={store}>
+					<App />
+				</Provider>
 			</MaterialUIControllerProvider>	
 		</Router>
     </AuthProvider>
@@ -39,6 +44,7 @@ function AppWrapper() {
 }
 
 function App() {
+
 	var isLoggedIn = false;
 	if (localStorage.getItem('authToken') !== null) {
 		isLoggedIn = true;

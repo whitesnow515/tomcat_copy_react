@@ -34,7 +34,7 @@ function Cover() {
     <MDSnackbar
       color="success"
       icon="check"
-      title="Sign In"
+      title="Sign Up"
       content={content}
       open={successSB}
       onClose={closeSuccessSB}
@@ -46,7 +46,7 @@ function Cover() {
   const renderInfoSB = (
     <MDSnackbar
       icon="notifications"
-      title="Sign In"
+      title="Sign Up"
       content={content}
       open={infoSB}
       onClose={closeInfoSB}
@@ -58,7 +58,7 @@ function Cover() {
     <MDSnackbar
       color="warning"
       icon="star"
-      title="Sign In"
+      title="Sign Up"
       content={content}
       open={warningSB}
       onClose={closeWarningSB}
@@ -71,7 +71,7 @@ function Cover() {
     <MDSnackbar
       color="error"
       icon="warning"
-      title="Sign In"
+      title="Sign Up"
       content={content}
       open={errorSB}
       onClose={closeErrorSB}
