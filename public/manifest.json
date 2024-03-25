@@ -1,6 +1,6 @@
 {
-  "short_name": "Copy Cat",
-  "name": "Copy Cat Trading",
+  "short_name": "Copier Cat",
+  "name": "Copier Cat",
   "icons": [
     {
       "src": "copycat.ico",
@@ -18,8 +18,9 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": ".",
   "display": "standalone",
+	"scope": "/",
+	"start_url": "/",
   "theme_color": "#000000",
   "background_color": "#ffffff"
 }

@@ -134,19 +134,19 @@ function Cover() {
     console.log(data['email']);
     if (data['email'][0] === '' || data['email'] === '') {
       setEmailError('Email is required!');
-      setWarningSB(true);
+      setErrorSB(true);
       setContent('Email is required!');
       return;
     }
     if (data['password'][0] === '' || data['password'] === '') {
       setPasswordError1('Password is required!');
-      setWarningSB(true);
+      setErrorSB(true);
       setContent('Password is required!');
       return;
     }
     if (data['password'][0] !== data['confirmPassword'][0]) {
       setPasswordError('Passwords do not match.');
-      setWarningSB(true);
+      setErrorSB(true);
       setContent('Passwords do not match.');
       return; 
     }

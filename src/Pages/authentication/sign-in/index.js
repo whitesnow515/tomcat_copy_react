@@ -153,13 +153,13 @@ function Basic() {
     console.log(data['email'][0]);
     if (data['email'][0] === '' || data['email'] === '') {
       setEmailError('Email is required!');
-      setWarningSB(true);
+      setErrorSB(true);
       setContent('Email is required!');
       return;
     }
     if (data['password'][0] === '' || data['password'] === '') {
       setPasswordError('Password is required!');
-      setWarningSB(true);
+      setErrorSB(true);
       setContent('Password is required!');
       return;
     }
@@ -216,7 +216,10 @@ function Basic() {
           mb={1}
           textAlign="center"
         >
-          <img src={brandWhite} style={{ width: 140, height: 140 }} />
+          <div className='w-full flex'>
+            <img src={brandWhite} style={{ width: 240, height: 110 }} alt='' className='mx-auto rounded-full'/>
+          </div>
+          
         </MDBox>
         <MDBox pt={4} pb={3} px={3}>
           <MDBox component="form" role="form">

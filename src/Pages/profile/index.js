@@ -10,7 +10,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+// import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { connect, useDispatch } from "react-redux";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
@@ -26,18 +26,34 @@ import { useState, useEffect } from "react";
 import axiosHelper from '../../Utilities/axiosHelper';
 import MDSnackbar from "components/MDSnackbar";
 import { getCurrentProfile } from "../../actions/profile";
+import { Select, Space } from 'antd';
+import swal from 'sweetalert';import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import InputAdornment from '@mui/material/InputAdornment';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+
 let brokerInfo = [];
 let userInfo = {};
 const cards = [
 ];
+var brokerOption = [];
 
-const CustomCard = ({ getCurrentProfile, profile, id, accountNumber1, brokerId1, userId1, pw1, brokerName1 }) => {
+const CustomCard = ({ getCurrentProfile, profile: { profiles, loading }, id, accountNumber1, brokerId1, userId1, pw1, brokerName1 }) => {
   const [successSB, setSuccessSB] = useState(false);
   const [errorSB, setErrorSB] = useState(false);
   const [content, setContent] = useState("");
   const closeSuccessSB = () => setSuccessSB(false);
   const closeErrorSB = () => setErrorSB(false);
-  const dispatch = useDispatch();
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
   const renderSuccessSB = (
     <MDSnackbar
       color="success"
@@ -50,6 +66,31 @@ const CustomCard = ({ getCurrentProfile, profile, id, accountNumber1, brokerId1,
       bgWhite
     />
   );
+
+  const showAlert = () => {
+    swal({
+      title: "Are you sure?",
+      text: "You will not be able to recover this s file!",
+      icon: "warning",
+      buttons: {
+        cancel: "No",
+        confirm: "OK"
+      },
+      dangerMode: true,
+    })
+    .then((willDelete) => {
+      if (willDelete) {
+        onDelete();
+        swal("Poof! Your profile file has been deleted!", {
+          icon: "success",
+        });
+      } else {
+        swal("Your profile file is safe!", {
+          icon: "error",
+        });
+      }
+    });
+  };
 
   const renderErrorSB = (
     <MDSnackbar
@@ -84,45 +125,119 @@ const CustomCard = ({ getCurrentProfile, profile, id, accountNumber1, brokerId1,
     }, []); 
 
     const onSubmet = async() => {
-        if (edit) { 
-          if (data['id'] !== 'add') {
-            try {
-              var response = await axiosHelper.put("https://app.copiercat.com/api/Account/brokerAccount/info", {brokerAccountInfoId: data['id'], brokerId: data["brokerId"], userId: data["userId"], password: data["password"][0], accountNumber: data["accountNumber"][0]});
+      if (edit) {
+        console.log(data["accountNumber"]);
+        if (data["brokerId"] === null) {
+          setContent("Please select brokername correctly!");
+          setErrorSB(true);
+          return;
+        }
+        if (data['id'] !== 'add') {
+          if (data["accountNumber"] === '') {
+            setContent("AccountNumber is required!");
+            setErrorSB(true);
+            return;
+          }
+          if (data["accountNumber"].length < 3) {
+            setContent("AccountNumber length must be at least 3 characters!");
+            setErrorSB(true);
+            return;
+          }
+          if (data["password"] === undefined) {
+            setContent("Password is required!");
+            setErrorSB(true);
+            return;
+          }
+          if (data["password"].length < 3) {
+            setContent("Password length must be at least 3 characters!");
+            setErrorSB(true);
+            return;
+          }
+          try {
+            let flag = -1;
+            for (let i = 0; i < profiles.length; i++) {
+              if (profiles[i].brokerId === data["brokerId"]) {
+                flag ++;
+              }
+            }
+            if (flag === 0) {
+              var response = await axiosHelper.put("https://app.copiercat.com/api/Account/brokerAccount/info", {brokerAccountInfoId: data['id'], brokerId: data["brokerId"], userId: data["userId"], password: data["password"], accountNumber: data["accountNumber"]});
               userInfo = response.data;
               setContent("The brokerAccount is updated");
               setSuccessSB(true);
-            } catch (error) {
-              if (error.response) {
-                const serverMessage = error.response.data; 
-                setContent(serverMessage);
+              getCurrentProfile();
+            }else{
+              setContent("Your brokername is already exist!");
+              setErrorSB(true);
+              return;
+            }
+          } catch (error) {
+            if (error.response) {
+              const serverMessage = error.response.data; 
+              setContent(serverMessage);
+              setErrorSB(true);
+            } else {
+              setContent(error.message);
+              setErrorSB(true);
+            }
+          }
+        }else{
+          if (data["accountNumber"] === '') {
+            setContent("AccountNumber is required!");
+            setErrorSB(true);
+            return;
+          }
+          if (data["accountNumber"].length < 3) {
+            setContent("AccountNumber length must be at least 3 characters!");
+            setErrorSB(true);
+            return;
+          }
+          if (data["password"] === '') {
+            setContent("Password is required!");
+            setErrorSB(true);
+            return;
+          }
+          if (data["password"].length < 3) {
+            setContent("Password length must be at least 3 characters!");
+            setErrorSB(true);
+            return;
+          }
+          if (data["brokerId"] === undefined) {
+            setContent("Please select brokername correctly!");
+            setErrorSB(true);
+            return;
+          }
+          try {
+            let flag = 0;
+            for (let i = 0; i < profiles.length; i++) {
+              if (profiles[i].brokerId === data["brokerId"]) {
+                setContent("Your brokername is already exist!");
                 setErrorSB(true);
-              } else {
-                // Handle other types of errors (network error, etc.)
-                setContent(error.message);
-                setErrorSB(true);
+                flag = 1;
+                return;
               }
             }
-          }else{
-            try {
-              var response = await axiosHelper.post("https://app.copiercat.com/api/Account/brokerAccount/info", {brokerId: data["brokerId"], userId: data["userId"], password: data["password"][0], accountNumber: data["accountNumber"][0]});
+            if (flag === 0) {
+              var response = await axiosHelper.post("https://app.copiercat.com/api/Account/brokerAccount/info", {brokerId: data["brokerId"], userId: data["userId"], password: data["password"], accountNumber: data["accountNumber"]});
               userInfo = response.data;
               setContent("The brokerAccount is created");
               setSuccessSB(true);
               getCurrentProfile();
-            } catch (error) {
-              if (error.response) {
-                const serverMessage = error.response.data; 
-                setContent(serverMessage);
-                setErrorSB(true);
-              } else {
-                // Handle other types of errors (network error, etc.)
-                setContent(error.message);
-                setErrorSB(true);
-              }
+            }
+          } catch (error) {
+            if (error.response) {
+              const serverMessage = error.response.data; 
+              setContent(serverMessage);
+              setErrorSB(true);
+            } else {
+              // Handle other types of errors (network error, etc.)
+              setContent(error.message);
+              setErrorSB(true);
             }
           }
         }
-        setEdit(!edit);
+      }
+      setEdit(!edit);
     }
 
     const onCancel = () => {
@@ -139,100 +254,111 @@ const CustomCard = ({ getCurrentProfile, profile, id, accountNumber1, brokerId1,
     }
     
     const onDelete = async () => {
-      var url = "https://app.copiercat.com/api/Account/brokerAccount/info?brokerAccountId=" + id;
-      try {
-        var response = await axiosHelper.delete(url);
-        setContent("The brokerAccount is deleted");
-        setSuccessSB(true);
+      if (data['id'] === 'add') {
         getCurrentProfile();
-      } catch (error) {
-        if (error.response) {
-          const serverMessage = error.response.data; 
-          setContent("Delete is fail!");
-          setErrorSB(true);
-        } else {
-          // Handle other types of errors (network error, etc.)
-          setContent(error.message);
-          setErrorSB(true);
+      }else{
+        var url = "https://app.copiercat.com/api/Account/brokerAccount/info?brokerAccountId=" + id;
+        try {
+          var response = await axiosHelper.delete(url);
+          setContent("The brokerAccount is deleted");
+          setSuccessSB(true);
+          getCurrentProfile();
+        } catch (error) {
+          if (error.response) {
+            const serverMessage = error.response.data; 
+            setContent("Delete is fail!");
+            setErrorSB(true);
+          } else {
+            // Handle other types of errors (network error, etc.)
+            setContent(error.message);
+            setErrorSB(true);
+          }
         }
       }
     }
 
     const onChange = (e) => {
+      console.log(data);
         setData({
             ...data,
-            [e.target.id] : [e.target.value]
+            [e.target.id] : [e.target.value][0]
         })
     }
 
     const onHandle = (e) => {
       let name = '';
       for (let i = 0; i < brokerInfo.length; i++) {
-        if (brokerInfo[i].id === e.target.value) {
+        if (brokerInfo[i].id === e) {
           name = brokerInfo[i].name;
         }
       }
-      console.log(name, e.target.value);
+      console.log(name, e);
       setData({
           ...data,
-          brokerId: e.target.value,
+          brokerId: e,
           brokerName: name
       });
     }
+
   return (
     <Grid item xs={12} md={6} xl={3}>
       {renderSuccessSB}
       {renderErrorSB}
       <Card sx={{ maxWidth: 345 }} id={data['id']}>
-        {/* <CardMedia
-          sx={{ height: 140 }}
-          image="/static/images/cards/contemplative-reptile.jpg"
-          title="green iguana"
-        /> */}
         <CardContent>
-          { !edit? 
-           (<Typography variant="subtitle2" gutterBottom fullWidth style={{ marginBottom: 40, marginTop: 50 }}>
-              Account Number: {data['accountNumber']}
-            </Typography>) :
-           (<TextField id="accountNumber" label="Account Number" variant="outlined" value={data['accountNumber']} fullWidth style={{ marginBottom: 30, marginTop: 50 }} onChange={onChange}/>) }
-          {/* { !edit?
-            (<Typography variant="subtitle2" gutterBottom fullWidth style={{ marginBottom: 40 }}>
-              Email: {data['userId']}
-            </Typography>) :
-            (<TextField id="email" label="Account Email" value={data['userId']} variant="outlined" fullWidth style={{ marginBottom: 30 }} onChange={onChange}/>)
-          } */}
           { !edit?
-            (<Typography variant="subtitle2" gutterBottom fullWidth style={{ marginBottom: 40 }}>
-              Password: {data['password']}
-            </Typography>) :
-            (<TextField id="password" label="Account Password" value={data['password']} variant="outlined" fullWidth style={{ marginBottom: 30 }} onChange={onChange}/>) }
-          { !edit?
-            (<Typography variant="subtitle2" gutterBottom fullWidth style={{ marginBottom: 40 }}>
-              BrokerName: {data['brokerName']}
+            (<Typography variant="subtitle2" gutterBottom fullWidth style={{ marginBottom: 40, marginTop: 50 }}>
+              Broker: {data['brokerName']}
             </Typography>) :
             (<Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
-              value={data['brokerId']}
-              label="BrokerName"
+              defaultValue={data['brokerId']}
+              label="Broker"
               onChange={onHandle}
-              fullWidth
-              style={{ height: 44 }}
-              // onChange={handleChange}
-            >
-              {
-                brokerInfo.map((broker)=> (
-                  <MenuItem value={broker.id} name={broker.name}>{broker.name}</MenuItem>
-                ))
-              }
-              {/* <MenuItem value={20}>20</MenuItem>
-              <MenuItem value={30}>30</MenuItem> */}
-            </Select>) }
+              className="w-full"
+              style={{ height: 44, marginBottom: 40, marginTop: 50 }}
+              options={brokerOption}
+              />) }
+          { !edit? 
+           (<Typography variant="subtitle2" gutterBottom fullWidth style={{ marginBottom: 40 }}>
+              Broker ID: {data['accountNumber']}
+            </Typography>) :
+           (<TextField id="accountNumber" label="Broker ID" variant="outlined" value={data['accountNumber']} fullWidth style={{ marginBottom: 40}} onChange={onChange}/>) }
+          { !edit?
+            (<Typography variant="subtitle2" gutterBottom fullWidth style={{ marginBottom: 40 }}>
+              Password: {data['password']}
+            </Typography>) :
+            (
+              <FormControl className="w-full" variant="outlined">
+                <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+                <OutlinedInput
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={data['password']}
+                  onChange={onChange}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  label="Password"
+                />
+              </FormControl>
+              // <TextField id="password" type="password" label="Password" value={data['password']} variant="outlined" fullWidth style={{ marginBottom: 30 }} onChange={onChange}/>
+              )}
         </CardContent>
         <CardActions>
           <Button size="small" type="button" variant="contained" color="success" style={{color: 'blue', width: 32, marginLeft: 20 }} onClick={onSubmet}>{!edit? "Edit" : "Submit"}</Button>
           { edit && (<Button size="small" type="button" variant="contained" color="success" style={{ color: 'blue', marginLeft: 20 }} onClick={onCancel}>Cancel</Button>) }
-          { !edit && (<Button size="small" type="button" variant="contained" color="warning" style={{ color: 'blue', marginLeft: 20 }} onClick={onDelete}>Delete</Button>) }
+          { !edit && (<Button size="small" type="button" variant="contained" color="warning" style={{ color: 'blue', marginLeft: 20 }} onClick={showAlert}>Delete</Button>) }
         </CardActions>
       </Card>
     </Grid>
@@ -259,7 +385,7 @@ const CardList = ({ cards }) => {
         <MDBox p={2}>
             <Grid container spacing={6}>
                 {cards.map((card) => (
-                    <CustomrCard1 key={card.id} id={card.id} accountNumber1={card.accountNumber} userId1={card.userId} pw1={card.pw} brokerId1={card.brokerId} brokerName1={card.brokerName} load={load} />
+                    <CustomrCard1 key={card.id} id={card.id} accountNumber1={card.accountId} userId1={card.userId} pw1={card.pw} brokerId1={card.brokerId} brokerName1={card.brokerName} load={load} />
                 ))}
                 <Grid item xs={12} md={6} xl={3}>
                     <Card sx={{ maxWidth: 345 }} style={{ height: '100%', justifyContent: 'center' }} onClick={onAddCard}>
@@ -367,40 +493,16 @@ function Profile({ getCurrentProfile, profile: { profiles, loading } }) {
       }
     }
   }
-  const getBrokerAccount = async () => {
-    try {
-      var response = await axiosHelper.get('https://app.copiercat.com/api/Account/brokerAccount/info');
-      var data = response.data;
-      var brokerAccount = [];
-      cards.length = 0;
-      for (let i = 0; i < data.length; i++) {
-        for (let j = 0; j < brokerInfo.length; j++) {
-          if (data[i].brokerId === brokerInfo[j].id) {
-            data[i].brokerName = brokerInfo[j].name;
-            brokerAccount.push(data[i]);
-            cards.push(data[i]);
-          }
-        }
-      }
-      setBrokerAccount(brokerAccount);
-    } catch (error) {
-      if (error.response) {
-        const serverMessage = error.response.data; 
-        setContent(serverMessage);
-        setErrorSB(true);
-      } else {
-        // Handle other types of errors (network error, etc.)
-        setContent(error.message);
-        setErrorSB(true);
-      }
-    }
-  }
 
   const getBroker = async () => {
     try{
       var response = await axiosHelper.get('https://app.copiercat.com/api/brokers');
       // setBrokerInfo(response.data);
       brokerInfo = response.data;
+      brokerOption.length = 0;
+      brokerInfo.map((broker) => {
+        brokerOption.push({label: broker.name, value: broker.id})
+      })
     } catch (error) {
       if (error.response) {
         const serverMessage = error.response.data; 
@@ -427,8 +529,8 @@ function Profile({ getCurrentProfile, profile: { profiles, loading } }) {
                     <Grid item xs={12} md={9} xl={6} sx={{ display: "flex" }}>
                     <Divider orientation="vertical" sx={{ ml: -2, mr: 1 }} />
                     <ProfileInfoCard
-                        title="profile information"
-                        description="Hi, I’m Alec Thompson, Decisions: If you can’t decide, the answer is no. If two equally difficult paths, choose the one more painful in the short term (pain avoidance is creating an illusion of equality)."
+                        // title="profile information"
+                        // description="Hi, I’m Alec Thompson, Decisions: If you can’t decide, the answer is no. If two equally difficult paths, choose the one more painful in the short term (pain avoidance is creating an illusion of equality)."
                         info={{
                         // fullName: "Pages",
                         email: localStorage.getItem('mail'),
@@ -463,7 +565,7 @@ function Profile({ getCurrentProfile, profile: { profiles, loading } }) {
                 </MDBox>
                 <MDBox pt={2} px={2} lineHeight={1.25}>
                 <MDTypography variant="h6" fontWeight="medium">
-                    Profiles
+                    Broker Accounts
                 </MDTypography>
                 </MDBox>
                 <CardList cards={profiles} />

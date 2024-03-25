@@ -149,7 +149,7 @@ function App() {
 				}
 			/>
 			<Route
-				path="/docs"
+				path="/account"
 				element={
 					<ProtectedRoute>
 						<Account />

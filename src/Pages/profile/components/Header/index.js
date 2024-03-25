@@ -41,7 +41,9 @@ import backgroundImage from "assets/images/bg-profile.jpeg";
 function Header({ children }) {
   const [tabsOrientation, setTabsOrientation] = useState("horizontal");
   const [tabValue, setTabValue] = useState(0);
-
+  var avatarLetter = '';
+  avatarLetter = localStorage.getItem("mail");
+  avatarLetter = avatarLetter.slice(0, 2).toUpperCase();
   useEffect(() => {
     // A function that sets the orientation state of the tabs.
     function handleTabsOrientation() {
@@ -94,15 +96,12 @@ function Header({ children }) {
       >
         <Grid container spacing={3} alignItems="center">
           <Grid item>
-            <MDAvatar src={burceMars} alt="profile-image" size="xl" shadow="sm" />
+            <h1  className="text-4xl font-bold rounded-full bg-blue-500 text-white p-4">{avatarLetter}</h1>
           </Grid>
           <Grid item>
             <MDBox height="100%" mt={0.5} lineHeight={1}>
               <MDTypography variant="h5" fontWeight="medium">
-                Richard Davis
-              </MDTypography>
-              <MDTypography variant="button" color="text" fontWeight="regular">
-                CEO / Co-Founder
+                {localStorage.getItem('mail')}
               </MDTypography>
             </MDBox>
           </Grid>

@@ -13,6 +13,7 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "antd": "^5.15.3",
     "autoprefixer": "^10.4.18",
     "axios": "^1.6.7",
     "chart.js": "4.3.0",
@@ -31,8 +32,10 @@
     "redux": "^5.0.1",
     "redux-devtools-extension": "^2.13.9",
     "redux-thunk": "^3.1.0",
+    "serve": "^14.2.1",
     "stylis": "4.1.4",
     "stylis-plugin-rtl": "^2.0.2",
+    "sweetalert": "^2.1.2",
     "tailwindcss": "^3.4.1",
     "web-vitals": "^2.1.4",
     "workbox-background-sync": "^6.6.0",
@@ -50,7 +53,7 @@
     "yup": "1.1.1"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "set HTTPS=true&&react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -64,7 +67,7 @@
   "browserslist": {
     "production": [
       ">0.2%",
-      "not dead",
+      "not dead", 
       "not op_mini all"
     ],
     "development": [

@@ -30,7 +30,7 @@ const routes = [
     name: "Account",
     key: "account",
     icon: <Icon fontSize="small">receipt_long</Icon>,
-    route: "/docs",
+    route: "/account",
     component: <Account />,
   },
   {
