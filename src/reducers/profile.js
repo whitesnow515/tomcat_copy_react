@@ -1,10 +1,8 @@
 import {
   GET_PROFILE,
   PROFILE_ERROR,
-  CLEAR_PROFILE,
-  UPDATE_PROFILE,
   GET_PROFILES,
-  GET_REPOS,
+  GET_BROKERINFO,
 } from "../actions/types";
 
 const initalState = {
@@ -12,20 +10,14 @@ const initalState = {
   profiles: [],
   repos: [],
   loading: true,
+  brokerInfo: [],
   error: {},
 };
 
-export default function (state = initalState, action) {
+function profile (state = initalState, action) {
   const { type, payload } = action;
 
   switch (type) {
-    case GET_PROFILE:
-    case UPDATE_PROFILE:
-      return {
-        ...state,
-        profile: payload,
-        loading: false,
-      };
     case GET_PROFILES:
       return {
         ...state,
@@ -38,20 +30,15 @@ export default function (state = initalState, action) {
         error: payload,
         loading: false,
       };
-    case CLEAR_PROFILE:
+    case GET_BROKERINFO:
       return {
         ...state,
-        profile: null,
-        repos: [],
-        loading: false,
-      };
-    case GET_REPOS:
-      return {
-        ...state,
-        repos: payload,
+        brokerInfo: payload,
         loading: false,
       };
     default:
       return state;
   }
 }
+
+export default profile;

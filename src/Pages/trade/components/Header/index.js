@@ -20,11 +20,9 @@ import PropTypes from "prop-types";
 
 // @mui material components
 import Card from "@mui/material/Card";
-import Grid from "@mui/material/Grid";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
-import MDTypography from "components/MDTypography";
 
 // Material Dashboard 2 React base styles
 import breakpoints from "assets/theme/base/breakpoints";
@@ -34,9 +32,6 @@ import backgroundImage from "assets/images/bg-profile.jpeg";
 
 function Header({ children }) {
   const [tabsOrientation, setTabsOrientation] = useState("horizontal");
-  var avatarLetter = '';
-  avatarLetter = localStorage.getItem("mail");
-  avatarLetter = avatarLetter.slice(0, 2).toUpperCase();
   useEffect(() => {
     // A function that sets the orientation state of the tabs.
     function handleTabsOrientation() {
@@ -85,18 +80,6 @@ function Header({ children }) {
           px: 2,
         }}
       >
-        <Grid container spacing={3} alignItems="center">
-          <Grid item>
-            <h1  className="text-4xl font-bold rounded-full bg-blue-500 text-white p-4">{avatarLetter}</h1>
-          </Grid>
-          <Grid item>
-            <MDBox height="100%" mt={0.5} lineHeight={1}>
-              <MDTypography variant="h5" fontWeight="medium">
-                {localStorage.getItem('mail')}
-              </MDTypography>
-            </MDBox>
-          </Grid>
-        </Grid>
         {children}
       </Card>
     </MDBox>

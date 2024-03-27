@@ -13,4 +13,9 @@ export const API_ENDPOINTS = {
     updateProfile: `${API_BASE_URL}/user/updateProfile`,
     // Other user-related endpoints
   },
+  // profile endpoints
+  profileEndpoints: {
+    brokerInfo: `${API_BASE_URL}/brokers`,
+    getProfiles: `${API_BASE_URL}/Account/brokerAccount/info`,
+  },
 };

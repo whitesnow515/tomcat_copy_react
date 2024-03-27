@@ -64,9 +64,7 @@ function ReportsBarChart({ color, title, description, date, chart }) {
             >
               <Bar data={data} options={options} redraw />
             </MDBox>
-          ),
-          [color, chart]
-        )}
+          ),[color, data, options])}
         <MDBox pt={3} pb={1} px={1}>
           <MDTypography variant="h6" textTransform="capitalize">
             {title}

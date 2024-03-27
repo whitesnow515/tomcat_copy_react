@@ -1,17 +1,14 @@
 import Grid from "@mui/material/Grid";
+import { connect } from 'react-redux';
 import Divider from "@mui/material/Divider";
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
 import PropTypes from "prop-types";
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-// import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { connect, useDispatch } from "react-redux";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import InstagramIcon from "@mui/icons-material/Instagram";
@@ -26,19 +23,18 @@ import { useState, useEffect } from "react";
 import axiosHelper from '../../Utilities/axiosHelper';
 import MDSnackbar from "components/MDSnackbar";
 import { getCurrentProfile } from "../../actions/profile";
-import { Select, Space } from 'antd';
-import swal from 'sweetalert';import Box from '@mui/material/Box';
+import { Select } from 'antd';
+import swal from 'sweetalert';
 import IconButton from '@mui/material/IconButton';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { API_ENDPOINTS } from '../../apiConfig'; 
 
 let brokerInfo = [];
-let userInfo = {};
-const cards = [
-];
+
 var brokerOption = [];
 
 const CustomCard = ({ getCurrentProfile, profile: { profiles, loading }, id, accountNumber1, brokerId1, userId1, pw1, brokerName1 }) => {
@@ -122,7 +118,7 @@ const CustomCard = ({ getCurrentProfile, profile: { profiles, loading }, id, acc
             brokerName,
             userId
         });
-    }, []); 
+    }, [accountNumber, brokerId, brokerName, data, id, pw, userId]); 
 
     const onSubmet = async() => {
       if (edit) {
@@ -161,8 +157,7 @@ const CustomCard = ({ getCurrentProfile, profile: { profiles, loading }, id, acc
               }
             }
             if (flag === 0) {
-              var response = await axiosHelper.put("https://app.copiercat.com/api/Account/brokerAccount/info", {brokerAccountInfoId: data['id'], brokerId: data["brokerId"], userId: data["userId"], password: data["password"], accountNumber: data["accountNumber"]});
-              userInfo = response.data;
+              await axiosHelper.put(API_ENDPOINTS.profileEndpoints.getProfiles, {brokerAccountInfoId: data['id'], brokerId: data["brokerId"], userId: data["userId"], password: data["password"], accountNumber: data["accountNumber"]});
               setContent("The brokerAccount is updated");
               setSuccessSB(true);
               getCurrentProfile();
@@ -218,8 +213,7 @@ const CustomCard = ({ getCurrentProfile, profile: { profiles, loading }, id, acc
               }
             }
             if (flag === 0) {
-              var response = await axiosHelper.post("https://app.copiercat.com/api/Account/brokerAccount/info", {brokerId: data["brokerId"], userId: data["userId"], password: data["password"], accountNumber: data["accountNumber"]});
-              userInfo = response.data;
+              await axiosHelper.post(API_ENDPOINTS.profileEndpoints.getProfiles, {brokerId: data["brokerId"], userId: data["userId"], password: data["password"], accountNumber: data["accountNumber"]});
               setContent("The brokerAccount is created");
               setSuccessSB(true);
               getCurrentProfile();
@@ -257,15 +251,14 @@ const CustomCard = ({ getCurrentProfile, profile: { profiles, loading }, id, acc
       if (data['id'] === 'add') {
         getCurrentProfile();
       }else{
-        var url = "https://app.copiercat.com/api/Account/brokerAccount/info?brokerAccountId=" + id;
+        var url = API_ENDPOINTS.profileEndpoints.getProfiles + "?brokerAccountId=" + id;
         try {
-          var response = await axiosHelper.delete(url);
+          await axiosHelper.delete(url);
           setContent("The brokerAccount is deleted");
           setSuccessSB(true);
           getCurrentProfile();
         } catch (error) {
           if (error.response) {
-            const serverMessage = error.response.data; 
             setContent("Delete is fail!");
             setErrorSB(true);
           } else {
@@ -367,19 +360,11 @@ const CustomCard = ({ getCurrentProfile, profile: { profiles, loading }, id, acc
 
 const CardList = ({ cards }) => {
     const [load, setLoad] = useState(true);
-    const [windowHeight, setWindowHeight] = useState(0);
     const onAddCard = () => {
         setLoad(!load);
         // var id = cards.length + 1;
         cards.push({ id: "add", name: '', email: '', pw: '', age: '' });
     }
-
-    useEffect(() => {
-      const handleResize = () => setWindowHeight(window.innerHeight);
-      window.addEventListener('resize', handleResize);
-      handleResize(); // Call the function to set the initial height
-      return () => window.removeEventListener('resize', handleResize); // Cleanup
-   }, []);
 
     return (
         <MDBox p={2}>
@@ -406,22 +391,13 @@ function Profile({ getCurrentProfile, profile: { profiles, loading } }) {
   const [errorSB, setErrorSB] = useState(false);
   const [content, setContent] = useState("");
 
-  const openSuccessSB = () => setSuccessSB(true);
   const closeSuccessSB = () => setSuccessSB(false);
-  const openInfoSB = () => setInfoSB(true);
   const closeInfoSB = () => setInfoSB(false);
-  const openWarningSB = () => setWarningSB(true);
   const closeWarningSB = () => setWarningSB(false);
-  const openErrorSB = () => setErrorSB(true);
   const closeErrorSB = () => setErrorSB(false);
-
-  // const [userInfo, setUserInfo] = useState({});
-  const [brokerAccount, setBrokerAccount] = useState([]);
-  // const [brokerInfo, setBrokerInfo] = useState([]);
   
   useEffect(() => {
     getBroker();
-    getUser();
     getCurrentProfile();
     // getBrokerAccount();
   }, [getCurrentProfile]); 
@@ -476,33 +452,16 @@ function Profile({ getCurrentProfile, profile: { profiles, loading } }) {
     />
   );
 
-  const getUser = async () => {
-    try {
-      var response = await axiosHelper.get('https://app.copiercat.com/api/Account/user');
-      // setUserInfo(response.data);
-      userInfo = response.data;
-    } catch (error) {
-      if (error.response) {
-        const serverMessage = error.response.data; 
-        setContent(serverMessage);
-        setErrorSB(true);
-      } else {
-        // Handle other types of errors (network error, etc.)
-        setContent(error.message);
-        setErrorSB(true);
-      }
-    }
-  }
-
   const getBroker = async () => {
     try{
-      var response = await axiosHelper.get('https://app.copiercat.com/api/brokers');
+      var response = await axiosHelper.get(API_ENDPOINTS.profileEndpoints.brokerInfo);
       // setBrokerInfo(response.data);
       brokerInfo = response.data;
       brokerOption.length = 0;
       brokerInfo.map((broker) => {
         brokerOption.push({label: broker.name, value: broker.id})
-      })
+        return null;
+      });
     } catch (error) {
       if (error.response) {
         const serverMessage = error.response.data; 
@@ -580,9 +539,6 @@ Profile.propTypes = {
   profile: PropTypes.object.isRequired,
 };
 
-const mapDispatchToProps = {
-  getCurrentProfile
-};
 const mapStateToProps = (state) => ({
   profile: state.profile,
 });

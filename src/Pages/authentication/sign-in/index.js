@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Card from "@mui/material/Card";
-import Switch from "@mui/material/Switch";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";
@@ -30,13 +29,9 @@ function Basic() {
   const [errorSB, setErrorSB] = useState(false);
   const [content, setContent] = useState("");
 
-  const openSuccessSB = () => setSuccessSB(true);
   const closeSuccessSB = () => setSuccessSB(false);
-  const openInfoSB = () => setInfoSB(true);
   const closeInfoSB = () => setInfoSB(false);
-  const openWarningSB = () => setWarningSB(true);
   const closeWarningSB = () => setWarningSB(false);
-  const openErrorSB = () => setErrorSB(true);
   const closeErrorSB = () => setErrorSB(false);
   
   const [open, setOpen] = React.useState(false);

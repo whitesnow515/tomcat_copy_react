@@ -1,5 +1,5 @@
 import Dashboard from './Pages/dashboard';
-import TradeCopy from './Pages/tables';
+import TradeCopy from './Pages/trade';
 import Account from './Pages/profile';
 import FAQ from './Pages/billing';
 import SignIn from "Pages/authentication/sign-in";
@@ -22,7 +22,7 @@ const routes = [
     name: "Trade Copy",
     key: "tradeCopy",
     icon: <Icon fontSize="small">table_view</Icon>,
-    route: "/inbox",
+    route: "/tradeCopy",
     component: <TradeCopy />,
   },
   {

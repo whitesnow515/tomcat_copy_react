@@ -1,28 +1,21 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { AuthProvider, useAuth } from './components/AuthContext'; // Adjust the import path as needed
+import { AuthProvider } from './components/AuthContext'; // Adjust the import path as needed
 import LoginScreen from './Pages/authentication/sign-in';
 import RegisterScreen from './Pages/authentication/sign-up';
 import Dashboard from './Pages/dashboard';
 import ProtectedRoute from './components/ProtectedRoute'; 
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import Icon from "@mui/material/Icon";
-import MDBox from "components/MDBox";
 import Sidenav from "examples/Sidenav";
 import Configurator from "examples/Configurator";
 import theme from "assets/theme";
-import themeRTL from "assets/theme/theme-rtl";
 import themeDark from "assets/theme-dark";
-import themeDarkRTL from "assets/theme-dark/theme-rtl";
-import rtlPlugin from "stylis-plugin-rtl";
-import { CacheProvider } from "@emotion/react";
-import createCache from "@emotion/cache";
 import routes from "routes";
-import { MaterialUIControllerProvider, useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "context";
+import { MaterialUIControllerProvider, useMaterialUIController, setMiniSidenav } from "context";
 import brandWhite from "assets/images/logo-ct.png";
 import brandDark from "assets/images/logo-ct-dark.png";
-import TradeCopy from './Pages/tables';
+import TradeCopy from './Pages/trade';
 import Account from './Pages/profile';
 import FAQ from './Pages/billing';
 import Army from './Pages/army';
@@ -54,23 +47,13 @@ function App() {
 		miniSidenav,
 		direction,
 		layout,
-		openConfigurator,
 		sidenavColor,
 		transparentSidenav,
 		whiteSidenav,
 		darkMode,
 	} = controller;
 	const [onMouseEnter, setOnMouseEnter] = useState(false);
-	const [rtlCache, setRtlCache] = useState(null);
 	const { pathname } = useLocation();
-	useMemo(() => {
-		const cacheRtl = createCache({
-		key: "rtl",
-		stylisPlugins: [rtlPlugin],
-		});
-
-		setRtlCache(cacheRtl);
-	}, []);
 
 	const handleOnMouseEnter = () => {
 		if (miniSidenav && !onMouseEnter) {
@@ -86,8 +69,6 @@ function App() {
 		}
 	};
 
-	const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator);
-
 	useEffect(() => {
 		document.body.setAttribute("dir", direction);
 	}, [direction]);
@@ -96,24 +77,6 @@ function App() {
 		document.documentElement.scrollTop = 0;
 		document.scrollingElement.scrollTop = 0;
 	}, [pathname]);
-
-	const getRoutes = (allRoutes) =>
-		allRoutes.map((route) => {
-			if (route.collapse) {
-				return getRoutes(route.collapse);
-			}
-
-			if (route.route) {
-				return <Route 
-					exact 
-					path={route.route} 
-					element={route.component} 
-					key={route.key} 
-				/>;
-			}
-
-			return null;
-		});
 
 	return (
 		<ThemeProvider theme={darkMode ? themeDark : theme}>
@@ -131,17 +94,13 @@ function App() {
 				/>
 			}
 				<Configurator />
-				{/* {configsButton} */}
 			</>
 		)}
 		{layout === "vr" && <Configurator />}
 		<Routes>
-			{/* {getRoutes(routes)} */}
 			<Route path="/" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />
-			{/* <Route exact path="/login" element={<LoginScreen />} />
-			<Route exact path="/signup" element={<RegisterScreen />} /> */}
 			<Route
-				path="/inbox"
+				path="/tradeCopy"
 				element={
 					<ProtectedRoute>
 						<TradeCopy />

@@ -38,20 +38,16 @@ function MDSnackbar({ color, icon, title, dateTime='', content, close, bgWhite, 
   const { darkMode } = controller;
 
   let titleColor;
-  let dateTimeColor;
   let dividerColor;
 
   if (bgWhite) {
     titleColor = color;
-    dateTimeColor = "dark";
     dividerColor = false;
   } else if (color === "light") {
     titleColor = darkMode ? "inherit" : "dark";
-    dateTimeColor = darkMode ? "inherit" : "text";
     dividerColor = false;
   } else {
     titleColor = "white";
-    dateTimeColor = "white";
     dividerColor = true;
   }
 

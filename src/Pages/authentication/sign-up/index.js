@@ -9,9 +9,7 @@ import MDButton from "components/MDButton";
 import CoverLayout from "Pages/authentication/components/CoverLayout";
 import bgImage from "assets/images/bg-sign-up-cover.jpeg";
 import axiosHelper from '../../../Utilities/axiosHelper';
-import { useAuth } from '../../../components/AuthContext';
 import { API_ENDPOINTS } from '../../../apiConfig'; 
-import { useNavigate } from 'react-router-dom';
 import MDSnackbar from "components/MDSnackbar";
 
 function Cover() {
@@ -21,13 +19,9 @@ function Cover() {
   const [errorSB, setErrorSB] = useState(false);
   const [content, setContent] = useState("");
 
-  const openSuccessSB = () => setSuccessSB(true);
   const closeSuccessSB = () => setSuccessSB(false);
-  const openInfoSB = () => setInfoSB(true);
   const closeInfoSB = () => setInfoSB(false);
-  const openWarningSB = () => setWarningSB(true);
   const closeWarningSB = () => setWarningSB(false);
-  const openErrorSB = () => setErrorSB(true);
   const closeErrorSB = () => setErrorSB(false);
 
   const renderSuccessSB = (
@@ -80,16 +74,9 @@ function Cover() {
     />
   );
   const [data, setData] = useState({email: "", password: "", confirmPassword: ""});
-  const [isSignUp, setIsSignUp] = useState(false);
   const [passwordError, setPasswordError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError1, setPasswordError1] = useState('');
-  const { setLogin } = useAuth();
-  const navigate = useNavigate();
-
-  const toggleForm = () => {
-    setIsSignUp(!isSignUp); 
-  };
 
   const onChange = (e) => {
     if (e.target.id === 'email' && e.target.value !== '') {
@@ -113,7 +100,6 @@ function Cover() {
       // alert("User Created please sign in ")
       setSuccessSB(true);
       setContent("User Created please sign in ");
-      setIsSignUp(false); 
     } catch (error) {
       if (error.response) {
         const serverMessage = error.response.data; 

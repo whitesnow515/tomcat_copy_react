@@ -6,13 +6,10 @@ import PropTypes from "prop-types";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import Link from "@mui/material/Link";
-import Icon from "@mui/material/Icon";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
-import MDButton from "components/MDButton";
 import SidenavCollapse from "examples/Sidenav/SidenavCollapse";
 import SidenavRoot from "examples/Sidenav/SidenavRoot";
-import sidenavLogoLabel from "examples/Sidenav/styles/sidenav";
 
 import {
   useMaterialUIController,
@@ -23,7 +20,7 @@ import {
 
 function Sidenav({ color, brand, brandName, routes, ...rest }) {
   const [controller, dispatch] = useMaterialUIController();
-  const { miniSidenav, transparentSidenav, whiteSidenav, darkMode, sidenavColor } = controller;
+  const { miniSidenav, transparentSidenav, whiteSidenav, darkMode } = controller;
   const location = useLocation();
   const collapseName = location.pathname.replace("/", "");
 
@@ -34,8 +31,6 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
   } else if (whiteSidenav && darkMode) {
     textColor = "inherit";
   }
-
-  const closeSidenav = () => setMiniSidenav(dispatch, true);
 
   useEffect(() => {
     // A function that sets the mini state of the sidenav.
@@ -50,7 +45,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
     handleMiniSidenav();
 
     return () => window.removeEventListener("resize", handleMiniSidenav);
-  }, [dispatch, location]);
+  }, [dispatch, transparentSidenav, whiteSidenav]);
 
   const renderRoutes = routes.map(({ type, name, icon, title, noCollapse, key, href, route }) => {
     let returnValue;
