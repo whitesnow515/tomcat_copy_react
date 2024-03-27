@@ -49,6 +49,8 @@ const CustomCard = ({ getCurrentProfile, profile: { profiles, loading }, id, acc
   const [showPassword, setShowPassword] = useState(false);
   const [checked, setChecked] = useState(false);
   const [ edit, setEdit ] = useState(false);
+  const [ editable, setEditable ] = useState(false);
+  const [ submitable, setSubmitable] = useState(false);
   var accountNumber = accountNumber1;
   var brokerId = brokerId1;
   var pw = pw1;
@@ -56,15 +58,18 @@ const CustomCard = ({ getCurrentProfile, profile: { profiles, loading }, id, acc
   var userId = userId1;
   const [data, setData] = useState({ id: "", accountNumber: "", brokerId: "", brokerName: "", password: "", userId: '', email: "", url: "", server: "", accountPw: "", accountId: "" });
     useEffect(() => {
-        setData({
-            ...data,
-            id,
-            accountNumber,
-            brokerId,
-            password: pw,
-            brokerName,
-            userId
-        });
+      if (id === 'add') {
+        setEdit(true);
+      }
+      setData({
+          ...data,
+          id,
+          accountNumber,
+          brokerId,
+          password: pw,
+          brokerName,
+          userId
+      });
     }, []); 
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -114,7 +119,22 @@ const CustomCard = ({ getCurrentProfile, profile: { profiles, loading }, id, acc
             }
           }
           if (flag === 0) {
-            await axiosHelper.put(API_ENDPOINTS.profileEndpoints.getProfiles, {brokerAccountInfoId: data['id'], brokerId: data["brokerId"], userId: data["userId"], password: data["password"], accountNumber: data["accountNumber"]});
+            await axiosHelper.put(API_ENDPOINTS.profileEndpoints.getProfiles, 
+              {
+                brokerAccountInfoId: data['id'], 
+                platformId: data["brokerId"], 
+                userId: data["userId"], 
+                password: data["password"], 
+                accountId: data["accountId"],
+                platformAccountInfoJson: {
+                  Email: data["email"],
+                  Url: data["url"],
+                  Server: data["server"],
+                  AccountNumber: data["accountNumber"],
+                  Password: data["accountPw"]
+                }
+              }
+              );
             setContent("The brokerAccount is updated");
             setSuccessSB(true);
             getCurrentProfile();
@@ -170,7 +190,33 @@ const CustomCard = ({ getCurrentProfile, profile: { profiles, loading }, id, acc
             }
           }
           if (flag === 0) {
-            await axiosHelper.post(API_ENDPOINTS.profileEndpoints.getProfiles, {brokerId: data["brokerId"], userId: data["userId"], password: data["password"], accountNumber: data["accountNumber"]});
+            console.log(
+              {
+                platformId: data["brokerId"], 
+                password: data["password"], 
+                accountId: data["accountId"],
+                platformAccountInfoJson: {
+                    Email: data["email"],
+                    Url: data["url"],
+                    Server: data["server"],
+                    AccountNumber: data["accountNumber"],
+                    Password: data["accountPw"]
+                }
+              });
+            await axiosHelper.post(API_ENDPOINTS.profileEndpoints.getProfiles, 
+              {
+                platformId: data["brokerId"], 
+                password: data["password"], 
+                accountId: data["accountId"],
+                platformAccountInfoJson: {
+                    Email: data["email"],
+                    Url: data["url"],
+                    Server: data["server"],
+                    AccountNumber: data["accountNumber"],
+                    Password: data["accountPw"]
+                }
+              }
+            );
             setContent("The brokerAccount is created");
             setSuccessSB(true);
             getCurrentProfile();
@@ -228,11 +274,43 @@ const CustomCard = ({ getCurrentProfile, profile: { profiles, loading }, id, acc
   }
 
   const onChange = (e) => {
-    console.log(data['password']);
       setData({
           ...data,
           [e.target.id] : [e.target.value][0]
       })
+      if (data['accountNumber'] === "") {
+        setSubmitable(false);
+        return;
+      }
+      if (data['brokerId'] === "") {
+        setSubmitable(false);
+        return;
+      }
+      if (data['password'] === "") {
+        setSubmitable(false);
+        return;
+      }
+      if (data['email'] === "") {
+        setSubmitable(false);
+        return;
+      }
+      if (data['url'] === "") {
+        setSubmitable(false);
+        return;
+      }
+      if (data['server'] === "") {
+        setSubmitable(false);
+        return;
+      }
+      if (data['accountPw'] === "") {
+        setSubmitable(false);
+        return;
+      }
+      if (data['accountId'] === "") {
+        setSubmitable(false);
+        return;
+      }
+      setSubmitable(true);
   }
 
   const onHandle = (e) => {
@@ -242,12 +320,12 @@ const CustomCard = ({ getCurrentProfile, profile: { profiles, loading }, id, acc
         name = brokerInfo[i].name;
       }
     }
-    console.log(name, e);
     setData({
         ...data,
         brokerId: e,
         brokerName: name
     });
+    setEditable(true);
   }
 
   const renderSuccessSB = (
@@ -301,6 +379,14 @@ const CustomCard = ({ getCurrentProfile, profile: { profiles, loading }, id, acc
     />
   );
 
+  const labelRender = (props) => {
+    const { label, value } = props;
+    if (label) {
+      return value;
+    }
+    return <span>Platform</span>;
+  };
+
   return (
     <Grid item xs={12} md={6} xl={3}>
       {renderSuccessSB}
@@ -312,25 +398,27 @@ const CustomCard = ({ getCurrentProfile, profile: { profiles, loading }, id, acc
               Broker: {data['brokerName']}
             </Typography>) :
             (<Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              defaultValue={data['brokerId']}
-              label="Broker"
+              // labelId="demo-simple-select-label"
+              // labelRender={labelRender}
+              placeholder="Platform"
+              id="brokerId"
+              value={data['brokerId']}
               onChange={onHandle}
               className="w-full"
-              style={{ height: 44, marginBottom: 20, marginTop: 50 }}
+              style={{ height: 44, marginBottom: 20, marginTop: 50, color: "black" }}
               options={brokerOption}
+              isRequired
               />) }
           { !edit? 
            (<Typography variant="subtitle2" gutterBottom fullWidth style={{ marginBottom: 40 }}>
-              Broker ID: {data['accountId']}
+              Account ID: {data['accountId']}
             </Typography>) :
-           (<TextField id="accountId" label="Broker ID" variant="outlined" value={data['accountId']} fullWidth style={{ marginBottom: 20}} onChange={onChange}/>) }
+           (editable && <TextField id="accountId" label="Account ID" variant="outlined" value={data['accountId']} fullWidth style={{ marginBottom: 20}} onChange={onChange} isRequired/>) }
           { !edit?
             (<Typography variant="subtitle2" gutterBottom fullWidth style={{ marginBottom: 30 }}>
               Password: {data['password']}
             </Typography>) :
-            (
+            (editable && 
               <FormControl className="w-full" variant="outlined">
                 <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
                 <OutlinedInput
@@ -338,6 +426,7 @@ const CustomCard = ({ getCurrentProfile, profile: { profiles, loading }, id, acc
                   type={showPassword ? 'text' : 'password'}
                   value={data['password']}
                   onChange={onChange}
+                  isRequired
                   endAdornment={
                     <InputAdornment position="end">
                       <IconButton
@@ -354,13 +443,13 @@ const CustomCard = ({ getCurrentProfile, profile: { profiles, loading }, id, acc
                 />
               </FormControl>
           )}
-          { edit && <FormControlLabel control={<Checkbox checked={checked} onChange={onCheck}/>} label="PlatformAccountInfo" className="mt-3" /> }
+          { editable && <FormControlLabel control={<Checkbox checked={checked} onChange={onCheck}/>} label="PlatformAccountInfo" className="mt-3" /> }
           { checked && (
             <>
-              <TextField id="email" type="email" label="Email" variant="outlined" value={data['email']} fullWidth style={{ marginBottom: 20, marginTop: 10}} onChange={onChange}/>
-              <TextField id="url" label="URL" type="url" variant="outlined" value={data['url']} fullWidth style={{ marginBottom: 20}} onChange={onChange}/>
-              <TextField id="server" label="Server" variant="outlined" value={data['server']} fullWidth style={{ marginBottom: 20}} onChange={onChange}/>
-              <TextField id="accountNumber" label="Broker ID" variant="outlined" value={data['accountNumber']} fullWidth style={{ marginBottom: 20}} onChange={onChange}/>
+              <TextField id="email" type="email" label="Email" variant="outlined" value={data['email']} isRequired fullWidth style={{ marginBottom: 20, marginTop: 10}} onChange={onChange}/>
+              <TextField id="url" label="URL" type="url" variant="outlined" value={data['url']} isRequired fullWidth style={{ marginBottom: 20}} onChange={onChange}/>
+              <TextField id="server" label="Server" variant="outlined" value={data['server']} isRequired fullWidth style={{ marginBottom: 20}} onChange={onChange}/>
+              <TextField id="accountNumber" label="Account Number" variant="outlined" value={data['accountNumber']} isRequired fullWidth style={{ marginBottom: 20}} onChange={onChange}/>
               <FormControl className="w-full" variant="outlined">
                 <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
                 <OutlinedInput
@@ -368,6 +457,7 @@ const CustomCard = ({ getCurrentProfile, profile: { profiles, loading }, id, acc
                   type={showPassword ? 'text' : 'password'}
                   value={data['accountPw']}
                   onChange={onChange}
+                  isRequired
                   endAdornment={
                     <InputAdornment position="end">
                       <IconButton
@@ -387,7 +477,7 @@ const CustomCard = ({ getCurrentProfile, profile: { profiles, loading }, id, acc
           ) }
         </CardContent>
         <CardActions>
-          <Button size="small" type="button" variant="contained" color="success" style={{color: 'blue', width: 32, marginLeft: 20 }} onClick={onSubmet}>{!edit? "Edit" : "Submit"}</Button>
+          <Button size="small" type="button" variant="contained" color="success" style={{color: 'blue', width: 32, marginLeft: 20 }} disabled={!submitable} onClick={onSubmet}>{!edit? "Edit" : "Submit"}</Button>
           { edit && (<Button size="small" type="button" variant="contained" color="success" style={{ color: 'blue', marginLeft: 20 }} onClick={onCancel}>Cancel</Button>) }
           { !edit && (<Button size="small" type="button" variant="contained" color="warning" style={{ color: 'blue', marginLeft: 20 }} onClick={showAlert}>Delete</Button>) }
         </CardActions>

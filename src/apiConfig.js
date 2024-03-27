@@ -15,7 +15,7 @@ export const API_ENDPOINTS = {
   },
   // profile endpoints
   profileEndpoints: {
-    brokerInfo: `${API_BASE_URL}/brokers`,
+    brokerInfo: `${API_BASE_URL}/Trade/platforms`,
     getProfiles: `${API_BASE_URL}/Account/platformAccount/info`,
   },
 };

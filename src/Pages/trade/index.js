@@ -42,10 +42,19 @@ function TradeCopy({ getBrokerInfo, profile: { brokerInfo, loading } }) {
   const [open, setOpen] = useState(false);
   // const [color, setColor] = useState("");
   const [active, setActive] = useState(false);
-  
+  const [trade, setTrade] = useState();
+  const [copycat, setCopycat] = useState();
+
+  const onTrade = (e) => {
+    setTrade(e);
+  }
+
+  const onCopycat = (e) => {
+    setCopycat(e);
+  }
+
   useEffect(() => {
     getBrokerInfo();
-    // getBrokerAccount();
   }, [getBrokerInfo]); 
 
   const onSetting = () => {
@@ -58,7 +67,8 @@ function TradeCopy({ getBrokerInfo, profile: { brokerInfo, loading } }) {
   
   const onReset = () => {
     setActive(false);
-    alert('reset');
+    setTrade();
+    setCopycat();
   }
 
   const renderSuccessSB = (
@@ -208,10 +218,10 @@ function TradeCopy({ getBrokerInfo, profile: { brokerInfo, loading } }) {
                         <Select
                           labelId="demo-simple-select-label"
                           id="demo-simple-select"
-                          // defaultValue={data['brokerId']}
+                          value={trade}
                           label="Broker"
                           placeholder="Trades"
-                          // onChange={onHandle}
+                          onChange={onTrade}
                           className="w-full"
                           style={{ height: 40}}
                           options={brokerInfo}
@@ -231,10 +241,10 @@ function TradeCopy({ getBrokerInfo, profile: { brokerInfo, loading } }) {
                         <Select
                           labelId="demo-simple-select-label"
                           id="demo-simple-select"
-                          // defaultValue={data['brokerId']}
+                          value={copycat}
                           label="Broker"
                           placeholder="Copy Cat"
-                          // onChange={onHandle}
+                          onChange={onCopycat}
                           className="w-full"
                           style={{ height: 40}}
                           options={brokerInfo}
